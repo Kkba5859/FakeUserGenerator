@@ -1,0 +1,77 @@
+﻿@page "/"
+@using FakeUserGenerator
+@using CsvHelper
+@using System.Globalization;
+@using System.IO;
+@using System.Text;
+@inject NavigationManager Navigation
+
+<PageTitle>Home</PageTitle>
+
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <label for="regionSelect" class="form-label">Select Region</label>
+            <select id="regionSelect" class="form-select" @onchange="RefreshUsers">
+                <option value="US+English">USA</option>
+                <option value="Poland+Polish">Poland</option>
+                <option value="France+French">France</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="errorSlider">Errors:</label>
+            <input type="range" id="errorSlider" min="0" max="10" @bind="errorCount" @oninput="RefreshUsers" />
+            <span>@errorCount</span>
+            <input type="number" @bind="errorCount" @oninput="RefreshUsers" />
+        </div>
+
+        <div class="col-md-3">
+            <label for="seedInput" class="form-label">Seed</label>
+            <input type="number" class="form-control" min="0" max="1000" @bind="seed" id="seedInput" @oninput="RefreshUsers" />
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <button class="btn btn-secondary"  @onclick="RandomizeSeed">Random Seed</button>
+        </div>
+        <div class="col-md-6 text-end">
+            <button class="btn btn-success" @onclick="ExportToCSV">Export to CSV</button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>ID</th>
+                    <th>FullName</th>
+                    <th>Address</th>
+                    <th>Phone</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in users)
+                {
+                    <tr>
+                        <td>@user.Number</td>
+                        <td>@user.Id</td>
+                        <td>@user.FullName</td>
+                        <td>@user.Address</td>
+                        <td>@user.Phone</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (isLoading && pageNumber > 0) // Show loading only when loading more data
+    {
+        <div class="d-flex justify-content-center align-items-center mt-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <span class="ms-3">Loading more users...</span>
+        </div>
+    }
+
+</div>
